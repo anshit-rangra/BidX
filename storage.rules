@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow authenticated users to read any file
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+    }
+
+    // Users can upload files only to their own folder
+    match /users/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Only the item owner (stored in file metadata as ownerId) can upload item images
+    match /items/{itemId}/{allPaths=**} {
+      allow write: if request.auth != null &&
+        request.auth.uid == request.resource.metadata.ownerId;
+    }
+  }
+}
