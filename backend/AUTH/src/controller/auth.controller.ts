@@ -46,13 +46,15 @@ async function registration(req: Request, res: Response) {
 
     
     const refreshToken = jwt.sign({
-        _id: newUser._id 
+        _id: newUser._id ,
+        token: "refresh"
     }, process.env.JWT_SECRET as string, {
         expiresIn: "7d"
     })
 
     const accessToken = jwt.sign({
-        _id: newUser._id
+        _id: newUser._id,
+        token: "access"
     }, process.env.JWT_SECRET as string, {
         expiresIn: "15m"
     })
@@ -84,13 +86,15 @@ async function login(req: Request, res: Response) {
     if(hashPassword !== userExists.password) return res.status(401).json({message: "Invalid credentials"})
 
      const refreshToken = jwt.sign({
-        _id: userExists._id 
+        _id: userExists._id ,
+        token: "refresh"
     }, process.env.JWT_SECRET as string, {
         expiresIn: "7d"
     })
 
     const accessToken = jwt.sign({
-        _id: userExists._id
+        _id: userExists._id,
+        token: "access"
     }, process.env.JWT_SECRET as string, {
         expiresIn: "15m"
     })
@@ -115,13 +119,15 @@ async function refreshToken(req: Request, res: Response) {
     if(!user) return res.status(404).json({message:"User not found"})
 
     const refreshToken = jwt.sign({
-        _id: user._id 
+        _id: user._id ,
+        token: "refresh"
     }, process.env.JWT_SECRET as string, {
         expiresIn: "7d"
     })
 
     const accessToken = jwt.sign({
-        _id: user._id
+        _id: user._id,
+        token: "access"
     }, process.env.JWT_SECRET as string, {
         expiresIn: "15m"
     })
@@ -157,11 +163,43 @@ async function logout(req: Request, res: Response) {
     res.status(200).json({message: "User logged out sucessfully"})
 }
 
+async function googleCallback(req: Request, res: Response) {
+    if(!req.user) return res.status(400).json({message: "Unauthorized"})
+
+    const hashedId = crypto.createHash('sha256').update((req.user as any).id).digest('hex')
+
+    const user = await userModel.findOneAndUpdate(
+        { email: (req.user as any).emails[0].value },
+        {
+            name: (req.user as any).displayName,
+            email: (req.user as any).emails[0].value,
+            password: hashedId,
+            profile: {
+                profilePic: (req.user as any).photos[0].value
+            }
+        },
+        { upsert: true, returnDocument: 'after' }
+    )
+
+    const accessToken = jwt.sign({ _id: user._id, token : "access" }, process.env.JWT_SECRET as string, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ _id: user._id, token : "refresh" }, process.env.JWT_SECRET as string, { expiresIn: '7d'})
+
+    res.cookie("123token321", refreshToken, {
+        maxAge: 24 * 60 * 60 * 7 * 1000,
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+    })
+        res.json({ message: "User loggedIn sucessfully", token: accessToken });
+
+}
+
 export default {
     home, 
     registration,
     login,
     refreshToken,
     myAccount,
-    logout
+    logout,
+    googleCallback
 }
