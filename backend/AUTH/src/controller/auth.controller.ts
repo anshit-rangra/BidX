@@ -20,7 +20,7 @@ async function registration(req: Request, res: Response) {
 
     const userExists = await userModel.findOne({ email });
 
-    if(userExists) return res.status(409).json({message: "User is already exists"})
+    if(userExists) return res.status(409).json({message: "User with this email is already exists"})
 
     let profilePic: { url: string, fileId: string };
     if(req.file){
@@ -107,12 +107,61 @@ async function login(req: Request, res: Response) {
 }
 
 async function refreshToken(req: Request, res: Response) {
+
+    if(!req.user) return res.status(404).json({message: "No user found"})
     
+    const user = await userModel.findOne({ _id : req.user._id })
+
+    if(!user) return res.status(404).json({message:"User not found"})
+
+    const refreshToken = jwt.sign({
+        _id: user._id 
+    }, process.env.JWT_SECRET as string, {
+        expiresIn: "7d"
+    })
+
+    const accessToken = jwt.sign({
+        _id: user._id
+    }, process.env.JWT_SECRET as string, {
+        expiresIn: "15m"
+    })
+
+    res.cookie("123token321", refreshToken, {
+        maxAge: 24 * 60 * 60 * 7 * 1000,
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+    })
+    
+
+
+    res.status(200).json({message:"Token geenrated sucessfully", token: accessToken})
+}
+
+async function myAccount(req: Request, res: Response) {
+    try {
+
+        if(!req.user) return res.status(404).json({message: "No user found"})
+
+        const user = await userModel.findOne({ _id: req.user._id })
+
+        res.status(200).json({message: "User fetched sucessfully" , user: user })
+        
+    } catch (error) {
+        res.send(500).json({message: "Internal server error"})
+    }
+}
+
+async function logout(req: Request, res: Response) {
+    res.clearCookie('123token321')
+    res.status(200).json({message: "User logged out sucessfully"})
 }
 
 export default {
     home, 
     registration,
     login,
-    refreshToken
+    refreshToken,
+    myAccount,
+    logout
 }
