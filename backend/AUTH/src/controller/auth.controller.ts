@@ -4,6 +4,7 @@ import { uploadPic } from "../services/imagekit.service.ts";
 import userModel from "../models/user.model.ts";
 import jwt from "jsonwebtoken"
 import { config } from "dotenv"
+import { publishToQueue } from '../broker/broker.ts';
 
 config();
 
@@ -43,6 +44,8 @@ async function registration(req: Request, res: Response) {
             profilePicId: profilePic.fileId
         }
     })
+
+    await publishToQueue("AUTH_NOTIFICATION.USER_CREATED", { name: newUser.name, email: newUser.email})
 
     
     const refreshToken = jwt.sign({
@@ -106,8 +109,7 @@ async function login(req: Request, res: Response) {
         sameSite: "none",
     })
 
-
-    res.status(201).json({message: "New user created", token: accessToken})
+    res.status(200).json({message: "User logged in successfully", token: accessToken})
 }
 
 async function refreshToken(req: Request, res: Response) {
@@ -141,7 +143,7 @@ async function refreshToken(req: Request, res: Response) {
     
 
 
-    res.status(200).json({message:"Token geenrated sucessfully", token: accessToken})
+    res.status(200).json({message:"Token generated successfully", token: accessToken})
 }
 
 async function myAccount(req: Request, res: Response) {
@@ -154,7 +156,7 @@ async function myAccount(req: Request, res: Response) {
         res.status(200).json({message: "User fetched sucessfully" , user: user })
         
     } catch (error) {
-        res.send(500).json({message: "Internal server error"})
+        res.status(500).json({message: "Internal server error"})
     }
 }
 

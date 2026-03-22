@@ -7,7 +7,6 @@ import rateLimit from "express-rate-limit";
 import helmet from 'helmet'
 
 
-
 const app = express();
 
 app.use(helmet())
@@ -20,6 +19,7 @@ const limiter = rateLimit({
 })
 
 app.use(limiter)
+
 
 app.use(express.json())
 app.use(cookieParser())

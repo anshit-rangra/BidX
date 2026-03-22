@@ -31,7 +31,7 @@ async function authMiddleWare(req: Request, res: Response, next: NextFunction) {
         next();
         
     } catch (error) {
-        res.status(500).json({message: "User is not loggedIn"})
+        res.status(401).json({message: "User is not loggedIn"})
     }
 
 }

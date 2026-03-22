@@ -1,6 +1,6 @@
 import { Strategy } from 'passport-google-oauth20'
-import { VerifyCallback } from 'passport-google-oauth20';
-import { Profile } from 'passport-google-oauth20';
+import type { VerifyCallback } from 'passport-google-oauth20';
+import type { Profile } from 'passport-google-oauth20';
 import { config } from 'dotenv'
 
 config(); 
