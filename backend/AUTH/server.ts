@@ -4,7 +4,7 @@ import app from "./src/app.ts"
 import connectDB from "./src/db/db.ts";
 import { connectMQ } from "./src/broker/broker.ts";
 
-const port: number = Number(process.env.AUTH_PORT) || 3000;
+const port: number = Number(process.env.AUTH_PORT) as number;
 
 
 connectDB().then(() => {
