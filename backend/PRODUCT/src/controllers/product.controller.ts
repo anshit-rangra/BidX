@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { deletePic, uploadPic } from "../services/imagekit.service.ts";
-import productModel from "../models/product.model.ts";
+import { deletePic, uploadPic } from "../services/imagekitProvider.ts";
+import { productModel } from "../models/productModelProvider.ts";
 
 interface File {
   fieldname: string;

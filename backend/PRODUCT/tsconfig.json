@@ -9,6 +9,6 @@
     "target": "ESNext",
     "moduleResolution": "nodenext",
 
-    "types": ["node"]
+    "types": ["node", "jest", "supertest"]
   }
 }
