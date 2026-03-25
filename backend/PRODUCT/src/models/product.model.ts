@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     }
-})
+}, { timestamps: true })
 
 const productModel = mongoose.model("products", productSchema)
 

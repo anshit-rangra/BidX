@@ -64,7 +64,7 @@ async function deletePic (fileId: string){
   if (error) {
     console.log("Error:", error);
   } else {
-    console.log("Deleted:", result);
+    
   }
 });
 }
