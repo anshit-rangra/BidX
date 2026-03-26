@@ -12,6 +12,8 @@ async function bidOnProduct(req: Request, res: Response) {
     try {
         const product = await BidOnProductCall(id, bid, accessToken);
 
+        if(product.product.completed === true) return res.status(401).json({message: "The bid is closed now you can't bid"})
+
         const bidInstance = await bidModel.create({
             product: id,
             bidder: req.user?._id,

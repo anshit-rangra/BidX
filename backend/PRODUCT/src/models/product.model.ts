@@ -46,7 +46,18 @@ const productSchema = new mongoose.Schema({
     bidder: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+
+    timeline: {
+        type: String,
+        required: true
+    },
+
+    completed: {
+        type: Boolean,
+        default: false
     }
+
 }, { timestamps: true })
 
 const productModel = mongoose.model("products", productSchema)

@@ -16,4 +16,6 @@ router.delete("/delete/:id", authMiddleWare, productController.deleteProduct)
 
 router.patch("/bid/:id", authMiddleWare, productController.bidding)
 
+router.patch("/complete/:id", authMiddleWare, productController.bidCompleted)
+
 export default router;

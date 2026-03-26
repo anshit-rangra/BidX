@@ -13,7 +13,11 @@ const productValidation = z.object({
     .max(2000, "Description must be less than 2000 characters"),
 
     basePrice: z
-    .number()
+    .number(),
+
+    timeline: z
+    .string()
+    .trim()
 })
 
 

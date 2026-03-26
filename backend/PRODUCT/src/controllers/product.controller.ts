@@ -32,7 +32,7 @@ async function getProducts(req: Request, res: Response) {
 }
 
 async function postProduct(req: Request, res: Response) {
-  const { title, description, basePrice } = req.body;
+  const { title, description, basePrice, timeline } = req.body;
 
   if (!req.files)
     return res.status(404).json({ message: "Please also upload images" });
@@ -78,7 +78,8 @@ async function postProduct(req: Request, res: Response) {
       currentPrice: basePrice,
       basePrice,
       creator: req.user._id,
-      bidder: req.user._id
+      bidder: req.user._id,
+      timeline
     });
 
     return res
@@ -138,6 +139,11 @@ async function bidding(req: Request, res: Response) {
 
     if(!product) return res.status(404).json({ message: "product not found" })
 
+    const timeline: number = Number(product.timeline)
+    const createdAt = (product.createdAt as Date).getTime()
+
+    if(createdAt > timeline) return res.status(401).json({message: "Timeline exeed ! Now you can not bid on this product"})
+      
     const nextMinBid = Math.ceil(product.currentPrice * 1.2)
 
     if(!bid) return res.status(404).json({message: "Bidding amount not found. Please provide it"})
@@ -156,9 +162,30 @@ async function bidding(req: Request, res: Response) {
 
 }
 
+async function bidCompleted(req: Request, res: Response) {
+  const { id } = req.params;
+
+  try {
+
+    const product = await productModel.findOne({ _id: id})
+
+    if(!product) return res.status(404).json({message: "Product not found"})
+
+    product.completed = true;
+
+    await product.save();
+
+    res.status(200).json({message: "Product bid completed"})
+    
+  } catch (error) {
+    res.status(500).json({message: "Internal server error"})
+  }
+}
+
 export default {
   getProducts,
   postProduct,
   deleteProduct,
-  bidding
+  bidding,
+  bidCompleted
 };
