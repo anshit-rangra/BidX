@@ -14,4 +14,6 @@ router.post("/post", authMiddleWare, getUploadMiddleware(), validatorMiddleware,
 
 router.delete("/delete/:id", authMiddleWare, productController.deleteProduct)
 
+router.patch("/bid/:id", authMiddleWare, productController.bidding)
+
 export default router;

@@ -9,6 +9,6 @@
     "target": "ESNext",
     "moduleResolution": "nodenext",
 
-    "types": ["node", "jest", "supertest", "cors"]
+    "types": ["node", "express", "cors"]
   }
 }

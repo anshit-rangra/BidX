@@ -78,6 +78,7 @@ async function postProduct(req: Request, res: Response) {
       currentPrice: basePrice,
       basePrice,
       creator: req.user._id,
+      bidder: req.user._id
     });
 
     return res
@@ -128,8 +129,36 @@ async function deleteProduct(req: Request, res: Response) {
   }
 }
 
+async function bidding(req: Request, res: Response) {
+  const { id } = req.params;
+  let  bid  = Number(req.query.bid)
+
+  try {
+    const product = await productModel.findOne({ _id: id })
+
+    if(!product) return res.status(404).json({ message: "product not found" })
+
+    const nextMinBid = Math.ceil(product.currentPrice * 1.2)
+
+    if(!bid) return res.status(404).json({message: "Bidding amount not found. Please provide it"})
+
+    if(bid < nextMinBid) return res.status(422).json({message: "Bidding amount at least 20 % greater than current amount"})
+
+    product.currentPrice = bid;
+    product.bidder = req.user?._id;
+    await product.save();
+
+    res.status(200).json({message: "You bid on this product", product})
+
+  } catch (error) {
+    res.status(500).json({message: "Internal Server Error"})
+  }
+
+}
+
 export default {
   getProducts,
   postProduct,
   deleteProduct,
+  bidding
 };

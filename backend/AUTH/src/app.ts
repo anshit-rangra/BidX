@@ -5,11 +5,13 @@ import passport from "passport"
 import googleStrategy from "./config/google.config.ts";
 import rateLimit from "express-rate-limit";
 import helmet from 'helmet'
+import cors from "cors"
 
 
 const app = express();
 
 app.use(helmet())
+app.use(cors({ origin: "*" }))
 
 
 const limiter = rateLimit({

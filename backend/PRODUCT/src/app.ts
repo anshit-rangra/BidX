@@ -2,11 +2,13 @@ import express from "express";
 import helmet from "helmet"
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser"
+import cors from "cors"
 import productRouter from "./routes/products.routes.ts"
 
 const app = express();
 
 app.use(helmet())
+app.use(cors({ origin: "*" }))
 
 const limiter = rateLimit({
     windowMs: 1*60*1000,

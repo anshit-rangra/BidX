@@ -9,7 +9,7 @@
     "target": "ESNext",
     "moduleResolution": "nodenext",
 
-    "types": ["node", "jest", "supertest"],
+    "types": ["node", "jest", "supertest", "cors"],
     "isolatedModules": true
   }
 }

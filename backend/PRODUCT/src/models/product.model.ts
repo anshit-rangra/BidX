@@ -38,12 +38,12 @@ const productSchema = new mongoose.Schema({
         required: true
     },
 
-    bidAmount: {
-        type: Number,
-        default: 0
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     },
 
-    creator: {
+    bidder: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     }
